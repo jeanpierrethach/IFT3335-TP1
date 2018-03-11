@@ -62,12 +62,10 @@ class Sudoku():
 
     '''
     
-
-    # TODO cost function should go towards 0
     def simulated_annealing(self):
         T = 3.0
-        alpha = 0.9999 # 0.99
-        epoch = 10000
+        alpha = 0.99
+        epoch = 4000
         
         for _ in range(epoch):
             # TODO could remove since T will never be 0
@@ -87,14 +85,10 @@ class Sudoku():
 
             # neighbour is accepted if is better than current state with respect
             # of cost function or probability
-            '''
-            # TODO FIX: probability range overflow [FIXED] by adding 9s into alpha
-              TODO FIX: seems not to converge to 0?
-            '''
-            if delta_e < 0 or probability(math.exp(delta_e/T)):
+            if delta_e < 0 or probability(math.exp(-delta_e/T)):
                 self.state = next_state
 
-            #print(T, self.cost_function(self.state))
+            print(T, self.cost_function(self.state))
             T = alpha * T
         return self.state
 
@@ -255,19 +249,18 @@ print("GLOBAL_CONFLICTS: ", gc)
 
 # uncomment for HILL_CLIMBING
 
-
+'''
 final_state, steps = s.hill_climbing()
 print("FINAL STATE: \n", final_state)
 print("steps: %d, cost function: %d" % (steps, s.cost_function(final_state)))
-
+'''
 
 # uncomment for simulated annealing
 
-'''
+
 final_state = s.simulated_annealing()
 print("FINAL STATE: \n", final_state)
 print(s.cost_function(final_state))
-'''
 
 
 '''
