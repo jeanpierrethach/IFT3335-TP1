@@ -39,13 +39,13 @@ if __name__ == '__main__':
         if args.heuristic == 'hc':
             final_state, steps = s.hill_climbing()
             if args.verbose:
-                print("steps: %d, cost function: %d" % (steps, s.global_conflicts(final_state)))
+                print("steps: %d, conflicts: %d" % (steps, s.global_conflicts(final_state)))
             x.append(s.global_conflicts(final_state))
             y.append(steps)
         elif args.heuristic == 'hch':
             final_state, steps = s.hill_climbing_reduced()
             if args.verbose:
-                print("steps: %d, cost function: %d" % (steps, s.global_conflicts(final_state)))
+                print("steps: %d, conflicts: %d" % (steps, s.global_conflicts(final_state)))
             x.append(s.global_conflicts(final_state))
             y.append(steps)
         elif args.heuristic == 'sa':
@@ -57,13 +57,13 @@ if __name__ == '__main__':
 
         tclock = time.clock() - start
         if args.verbose:
-            print("exec time:", tclock)
+            print("execution time:", tclock)
     
     # TODO create file for useful data
 
     if args.heuristic == 'hc':
-        plot_2D_grid(x, y, 'cost function', 'steps', 'Hill Climbing', 'ro', args)
+        plot_2D_grid(x, y, 'conflicts', 'steps', 'Hill Climbing', 'ro', args)
     elif args.heuristic == 'hch':
-        plot_2D_grid(x, y, 'cost_function', 'steps', 'Hill Climbing with heuristic', 'ro', args)
+        plot_2D_grid(x, y, 'conflicts', 'steps', 'Hill Climbing with heuristic', 'ro', args)
     elif args.heuristic == 'sa':   
         plot_2D_grid(x, y, 'iteration', 'cost', 'Simulated Annealing', 'b-', args)

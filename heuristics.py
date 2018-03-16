@@ -14,7 +14,7 @@ class Sudoku():
 
     def hill_climbing(self):
         explored = []
-        combinations = list(self.actions_combinations())
+        combinations = list(self.squares_combinations())
         
         while True:
             possible_states = []
@@ -41,7 +41,7 @@ class Sudoku():
         
         while True:
             possible_states = []
-            combinations = list(self.actions_combinations_reduced_conflicts())
+            combinations = list(self.squares_combinations_reduced_conflicts())
 
             for c in combinations:
                 ns = self.swap(c[0], c[1])
@@ -67,7 +67,7 @@ class Sudoku():
         cost_overtime = []
         steps = []
 
-        combinations = list(self.actions_combinations())
+        combinations = list(self.squares_combinations())
 
         for i in range(epoch):
             # TODO could remove since T will never be 0
@@ -96,21 +96,23 @@ class Sudoku():
 
         return self.state, cost_overtime, steps
     
-    def actions_combinations(self):
+    def squares_combinations(self):
         '''
-        Combinations of non fixed cases with non fixed cases for each unit
+        Combinations of non fixed squares with non fixed squares for each unit.
+        Generator of tuple of squares indexes. Ex: ((0,0),(0,1))
         '''
         for i,j in ((x,y) for x in range(3) for y in range(3)):
-            all_actions = ((x,y) for x in range(i*3,i*3+3) for y in range(j*3,j*3+3))
-            permissible_actions = (x for x in all_actions if x not in set(self.fixed_cells))
-            for c in combinations(permissible_actions, 2):
+            all_squares = ((x,y) for x in range(i*3,i*3+3) for y in range(j*3,j*3+3))
+            permissible_squares = (x for x in all_squares if x not in set(self.fixed_cells))
+            for c in combinations(permissible_squares, 2):
                 yield c
 
-    def actions_combinations_reduced_conflicts(self):
+    def squares_combinations_reduced_conflicts(self):
         '''
-        Combinations of non fixed cases with non fixed cases for each unit
+        Combinations of non fixed squares with non fixed squares for each unit
         and ignores combinations that will necessarily generate conflicts 
-        if they are swapped in their respective rows and columns
+        if they are swapped in their respective rows and columns.
+        Generator of tuple of squares indexes. Ex: ((0,0),(0,1))
         '''
         rows = []
         cols = []
@@ -118,10 +120,10 @@ class Sudoku():
             rows.append(set(self.state[i]))
             cols.append(set(self.state[:,i]))
         for i,j in ((x,y) for x in range(3) for y in range(3)):
-            all_actions = ((x,y) for x in range(i*3,i*3+3) for y in range(j*3,j*3+3))
-            permissible_actions = (x for x in all_actions if x not in set(self.fixed_cells))
-            for c in combinations(permissible_actions, 2):
-                # if the value of the case isn't present in the row and column of the other case
+            all_squares = ((x,y) for x in range(i*3,i*3+3) for y in range(j*3,j*3+3))
+            permissible_squares = (x for x in all_squares if x not in set(self.fixed_cells))
+            for c in combinations(permissible_squares, 2):
+                # if the value of the square isn't present in the row and column of the other square
                 if self.state[c[0][0], c[0][1]] not in rows[c[1][0]] and \
                    self.state[c[0][0], c[0][1]] not in cols[c[1][1]] and \
                    self.state[c[1][0], c[1][1]] not in rows[c[0][0]] and \
@@ -129,9 +131,9 @@ class Sudoku():
                     yield c
 
     '''
-    TODO simulated annealing heuristic, could use the actions combinations reduced conflicts too?
+    TODO simulated annealing heuristic, could use the squares combinations reduced conflicts too?
 
-    OR take cases which has conflicts and make combinations with only the ones that reduce the conflicts
+    OR take squares which has conflicts and make combinations with only the ones that reduce the conflicts
     which would be like the hill climbing, but still allow to randomly pick the next state instead of taking
     the minimum
     '''
@@ -141,7 +143,7 @@ class Sudoku():
         '''
         Returns the cost which represents the sum for each row and column
         of the sum of numbers from 1 through n^2 that are NOT present.
-        The optimal solution should equal to 0.
+        The cost function of the optimal solution should equal to 0.
         '''    
         total = 0
         set_digits = set(digits)
@@ -150,19 +152,19 @@ class Sudoku():
             total += len(set_digits - set(state[:,i]))
         return total
 
-    def swap(self, c1, c2):
+    def swap(self, s1, s2):
         '''
-        Returns a new state with swapped cases values.
+        Returns a new state with swapped squares values.
         '''
         new_state = np.copy(self.state)
-        i,j = c1
-        m,n = c2
+        i,j = s1
+        m,n = s2
         new_state[i,j], new_state[m,n] = new_state[m,n], new_state[i,j]
         return new_state
 
     def random_fill(self):
         '''
-        Randomly assign numbers into blank cases to generate a filled state 
+        Randomly assign numbers into blank squares to generate a filled state 
         and takes in account the unit constraint.
         '''
         for i,j in zip(*np.where(self.state == 0)):
@@ -173,6 +175,7 @@ class Sudoku():
     def global_conflicts(self, state):
         '''
         Return the sum of the conflicts for each row and column of the state.
+        The global score of the optimal solution should equal to 0.
         '''
         global_score = 0
         for i in range(9):
