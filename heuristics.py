@@ -23,10 +23,6 @@ class Sudoku():
                 ns = self.swap(c[0], c[1])
                 possible_states.append((ns, self.global_conflicts(ns)))
 
-            # TODO could remove since possible_states will never be empty
-            #if not possible_states:
-            #    return self.state, len(explored)
-
             minimum_state = min(possible_states, key=itemgetter(1))
             rc = min_random_tie(minimum_state, possible_states)
 
@@ -70,17 +66,14 @@ class Sudoku():
         combinations = list(self.squares_combinations())
 
         for i in range(epoch):
-            # TODO could remove since T will never be 0
-            #if T == 0:
-            #    return self.state
+            
+            if T == 0:
+                return self.state, cost_overtime, steps
+
             possible_states = []
             for c in combinations:
                 state = self.swap(c[0], c[1])
                 possible_states.append(state)
-
-            # TODO could remove since possible_states will never be empty
-            #if not possible_states:
-            #    return self.state, cost_overtime, steps
 
             next_state = random.choice(possible_states)
             delta_e = self.cost_function(next_state) - self.cost_function(self.state)
@@ -130,15 +123,6 @@ class Sudoku():
                    self.state[c[1][0], c[1][1]] not in cols[c[0][1]]:
                     yield c
 
-    '''
-    TODO simulated annealing heuristic, could use the squares combinations reduced conflicts too?
-
-    OR take squares which has conflicts and make combinations with only the ones that reduce the conflicts
-    which would be like the hill climbing, but still allow to randomly pick the next state instead of taking
-    the minimum
-    '''
-
-
     def cost_function(self, state):
         '''
         Returns the cost which represents the sum for each row and column
@@ -152,13 +136,13 @@ class Sudoku():
             total += len(set_digits - set(state[:,i]))
         return total
 
-    def swap(self, s1, s2):
+    def swap(self, sq1, sq2):
         '''
         Returns a new state with swapped squares values.
         '''
         new_state = np.copy(self.state)
-        i,j = s1
-        m,n = s2
+        i,j = sq1
+        m,n = sq2
         new_state[i,j], new_state[m,n] = new_state[m,n], new_state[i,j]
         return new_state
 
@@ -190,9 +174,3 @@ class Sudoku():
             c_count_2 = len([x for x in c_counts if x == 2])
             global_score += r_count_3 + r_count_2 + c_count_3 + c_count_2
         return global_score
-
-    # TODO add this goal test for each algorithm since we want to stop when it reaches 0
-    '''
-    def test_goal(self, state):
-        return self.global_conflicts(state) == 0
-    '''
