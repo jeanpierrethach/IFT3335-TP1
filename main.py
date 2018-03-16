@@ -10,8 +10,8 @@ def parse_args():
 
         parser.add_argument('--heuristic', type=str,
                             required=True,
-                            choices=['hc', 'hch', 'sa'],
-                            help='hc for Hill Climbing, hch for Hill Climbing with heuristic, sa for simulated_annealing')
+                            choices=['hc', 'hcr', 'sa'],
+                            help='hc for Hill Climbing, hcr for Hill Climbing reduced, sa for simulated_annealing')
         parser.add_argument('--filename', type=str,
                             default='100sudoku.txt',
                             help='The filename containing sequence of 81 digits. (default: %(default)s)')
@@ -42,7 +42,7 @@ if __name__ == '__main__':
                 print("steps: %d, conflicts: %d" % (steps, s.global_conflicts(final_state)))
             x.append(s.global_conflicts(final_state))
             y.append(steps)
-        elif args.heuristic == 'hch':
+        elif args.heuristic == 'hcr':
             final_state, steps = s.hill_climbing_reduced()
             if args.verbose:
                 print("steps: %d, conflicts: %d" % (steps, s.global_conflicts(final_state)))
@@ -63,7 +63,7 @@ if __name__ == '__main__':
 
     if args.heuristic == 'hc':
         plot_2D_grid(x, y, 'conflicts', 'steps', 'Hill Climbing', 'ro', args)
-    elif args.heuristic == 'hch':
-        plot_2D_grid(x, y, 'conflicts', 'steps', 'Hill Climbing with heuristic', 'ro', args)
+    elif args.heuristic == 'hcr':
+        plot_2D_grid(x, y, 'conflicts', 'steps', 'Hill Climbing reduced', 'ro', args)
     elif args.heuristic == 'sa':   
         plot_2D_grid(x, y, 'iteration', 'cost', 'Simulated Annealing', 'b-', args)
