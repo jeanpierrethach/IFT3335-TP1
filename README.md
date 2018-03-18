@@ -22,10 +22,20 @@ python main.py --heuristic hcr
 ```
 
 #### Arguments
-* `--heuristic`: Heuristics for search problems. hc = Hill Climbing, hcr = Hill Climbing reduced, sa = Simulated Annealing. *Example*: `--heuristic hc`
+* `--heuristic`: Heuristics for search problems. 
+
+   hc = Hill Climbing
+
+   hcr = Hill Climbing reduced
+
+   sa = Simulated Annealing. 
+   
+   *Example*: `--heuristic hc`
+
 * `--filename`: Filename containing sequence of 81 digits. *Default*: `100sudoku.txt`
 * `--verbose`: Boolean flag indicating if statements should be printed to the console. (Optional)
 * `--img_output_dir`: Directory to write graphs output to.  *Default*: `./graphs_output`
+* `--results_dir`: Directory to write data results to.  *Default*: `./results`
 
 ## References
 
