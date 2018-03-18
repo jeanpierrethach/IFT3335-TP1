@@ -1,3 +1,4 @@
+import os
 import random
 import numpy as np
 
@@ -21,3 +22,7 @@ def min_random_tie(min_state, possible_states):
     '''
     states = [i for i,v in enumerate(possible_states) if v[1] == min_state[1]]
     return random.choice(states)
+
+def maybe_make_directory(dir_path):
+    if not os.path.exists(dir_path):
+        os.makedirs(dir_path)
