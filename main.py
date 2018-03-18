@@ -3,7 +3,7 @@ import time
 
 from utils import read_file, shape, maybe_make_directory, array2str
 from plots import plot_2D_grid_hc, plot_2D_grid_hcr, plot_2D_grid_sa
-from generator_data import output_csv
+from generator_data import output_csv, display_avg_stats
 from heuristics import Sudoku
 
 def parse_args():
@@ -70,9 +70,9 @@ if __name__ == '__main__':
         initial_state = shape(p)
         s = Sudoku(initial_state)
         s.random_fill()
-        final_state, steps, cost = heuristics_options[args.heuristic](args, s)
+        final_state, steps, score = heuristics_options[args.heuristic](args, s)
         x.append(steps)
-        y.append(cost)
+        y.append(score)
 
         tclock = time.clock() - start
         if args.verbose:
@@ -81,7 +81,7 @@ if __name__ == '__main__':
         if args.heuristic == "sa":
             data.append((p, args.heuristic, array2str(final_state.flatten()), s.cost_function(final_state), len(steps), tclock))
         else:
-            data.append((p, args.heuristic, array2str(final_state.flatten()), cost, steps, tclock))
+            data.append((p, args.heuristic, array2str(final_state.flatten()), score, steps, tclock))
 
     output_csv(args, data)
 
@@ -92,3 +92,5 @@ if __name__ == '__main__':
     }
 
     plots_options[args.heuristic](x, y, args.img_output_dir)
+
+    display_avg_stats(args)

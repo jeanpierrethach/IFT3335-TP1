@@ -7,7 +7,7 @@ Authors: Jean-Pierre T., Sofiene F. *- University of Montreal*
 ## Setup
 #### Dependencies:
 * Python 3.5+
-* Python packages: numpy, matplotlib
+* Python packages: numpy, matplotlib, pandas
 
 ## Usage
 ### Basic Usage
