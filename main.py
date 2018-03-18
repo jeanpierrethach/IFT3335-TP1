@@ -1,8 +1,9 @@
 import argparse
 import time
 
-from utils import read_file, shape, maybe_make_directory
+from utils import read_file, shape, maybe_make_directory, array2str
 from plots import plot_2D_grid_hc, plot_2D_grid_hcr, plot_2D_grid_sa
+from generator_data import output_csv
 from heuristics import Sudoku
 
 def parse_args():
@@ -21,29 +22,33 @@ def parse_args():
         parser.add_argument('--img_output_dir', type=str,
                             default='./graphs_output',
                             help='Relative or absolute directory path to output image graphs.')
+        parser.add_argument('--results_dir', type=str,
+                            default='./results',
+                            help='Relative or absolute directory path to data results.')                    
 
         args = parser.parse_args()
 
         maybe_make_directory(args.img_output_dir)
+        maybe_make_directory(args.results_dir)
         return args
 
 def run_hill_climbing(args, s):
     final_state, steps = s.hill_climbing()
     if args.verbose:
         print("steps: %d, conflicts: %d" % (steps, s.global_conflicts(final_state)))
-    return steps, s.global_conflicts(final_state)
+    return final_state, steps, s.global_conflicts(final_state)
 
 def run_hill_climbing_reduced(args, s):
     final_state, steps = s.hill_climbing_reduced()
     if args.verbose:
         print("steps: %d, conflicts: %d" % (steps, s.global_conflicts(final_state)))
-    return steps, s.global_conflicts(final_state)
+    return final_state, steps, s.global_conflicts(final_state)
 
 def run_simulated_annealing(args, s):
     final_state, cost_overtime, steps = s.simulated_annealing()
     if args.verbose:
         print("cost function: %d" % s.cost_function(final_state))
-    return steps, cost_overtime
+    return final_state, steps, cost_overtime
 
 if __name__ == '__main__':
     args = parse_args()
@@ -51,6 +56,7 @@ if __name__ == '__main__':
 
     x = []
     y = []
+    data = []
 
     heuristics_options = {
         "hc": run_hill_climbing,
@@ -64,16 +70,20 @@ if __name__ == '__main__':
         initial_state = shape(p)
         s = Sudoku(initial_state)
         s.random_fill()
- 
-        steps, cost = heuristics_options[args.heuristic](args, s)
+        final_state, steps, cost = heuristics_options[args.heuristic](args, s)
         x.append(steps)
         y.append(cost)
 
         tclock = time.clock() - start
         if args.verbose:
             print("execution time:", tclock)
-    
-    # TODO create file for useful data
+
+        if args.heuristic == "sa":
+            data.append((p, args.heuristic, array2str(final_state.flatten()), s.cost_function(final_state), len(steps), tclock))
+        else:
+            data.append((p, args.heuristic, array2str(final_state.flatten()), cost, steps, tclock))
+
+    output_csv(args, data)
 
     plots_options = {
         "hc": plot_2D_grid_hc,

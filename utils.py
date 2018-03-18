@@ -26,3 +26,6 @@ def min_random_tie(min_state, possible_states):
 def maybe_make_directory(dir_path):
     if not os.path.exists(dir_path):
         os.makedirs(dir_path)
+
+def array2str(arr):
+    return ''.join(str(x) for x in arr)
