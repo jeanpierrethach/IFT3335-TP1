@@ -159,19 +159,18 @@ def solve_all(grids, name='', showif=0.0):
     def time_solve(grid):
         start = time.clock()
         values, steps = solve(grid)
-        print(steps)
         t = time.clock()-start
         ## Display puzzles that take long enough
         if showif is not None and t > showif:
             display(grid_values(grid))
             if values: display(values)
             print('(%.2f seconds)\n' % t)
-        return (t, solved(values))
-    times, results = zip(*[time_solve(grid) for grid in grids])
+        return (t, solved(values), steps)
+    times, results, steps = zip(*[time_solve(grid) for grid in grids])
     N = len(grids)
     if N > 1:
-        print("Solved %d of %d %s puzzles (avg %.2f secs (%d Hz), max %.2f secs)." % (
-            sum(results), N, name, sum(times)/N, N/sum(times), max(times)))
+        print("Solved %d of %d %s puzzles (avg %.2f secs (%d Hz), max %.2f secs) with avg steps %d." % (
+            sum(results), N, name, sum(times)/N, N/sum(times), max(times), sum(steps)/N))
 
 def solved(values):
     "A puzzle is solved if each unit is a permutation of the digits 1 to 9."
@@ -201,6 +200,7 @@ if __name__ == '__main__':
     solve_all(from_file("puzzles/top95.txt"), "hard", None)
     solve_all(from_file("puzzles/hardest.txt"), "hardest", None)
     solve_all([random_puzzle() for _ in range(99)], "random", 100.0)
+    solve_all(from_file("100sudoku.txt"), "100sudoku", None)
 
 ## References used:
 ## http://www.scanraid.com/BasicStrategies.htm
